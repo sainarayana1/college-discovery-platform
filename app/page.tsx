@@ -1,65 +1,180 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface College {
+  id: string;
+  name: string;
+  location: string;
+  fees: number;
+  rating: number;
+  placements: string;
+  overview: string;
+}
 
 export default function Home() {
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/colleges")
+      .then((res) => res.json())
+      .then((data) => setColleges(data));
+  }, []);
+
+  const filteredColleges = colleges.filter((college) =>
+    college.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+
+          <div className="inline-block px-4 py-2 rounded-full border border-cyan-500 text-cyan-400 mb-5">
+            🚀 India's Smart College Finder
+          </div>
+
+          <h1 className="text-6xl md:text-7xl font-black mb-5">
+            Find Your
+            <span className="block bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+              Dream College
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            Compare colleges, placements, fees and ratings to choose the best
+            engineering institute for your future.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Stats */}
+        <div className="grid md:grid-cols-4 gap-5 mb-12">
+
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+            <p className="text-gray-400">Colleges</p>
+            <h2 className="text-4xl font-bold text-cyan-400">
+              {colleges.length}
+            </h2>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+            <p className="text-gray-400">Highest Rating</p>
+            <h2 className="text-4xl font-bold text-yellow-400">
+              4.9
+            </h2>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+            <p className="text-gray-400">Top Package</p>
+            <h2 className="text-4xl font-bold text-green-400">
+              22 LPA
+            </h2>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+            <p className="text-gray-400">Students</p>
+            <h2 className="text-4xl font-bold text-pink-400">
+              50K+
+            </h2>
+          </div>
+
         </div>
-      </main>
-    </div>
+
+        {/* Search */}
+        <div className="mb-10">
+
+          <input
+            type="text"
+            placeholder="🔍 Search colleges..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full p-5 rounded-2xl bg-slate-900 border border-slate-700 focus:border-cyan-500 outline-none text-lg"
+          />
+
+        </div>
+
+        {/* Cards */}
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+          {filteredColleges.map((college) => (
+            <div
+              key={college.id}
+              className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20"
+            >
+
+              <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 p-6">
+
+                <h2 className="text-3xl font-bold">
+                  {college.name}
+                </h2>
+
+                <p className="text-white/80 mt-1">
+                  📍 {college.location}
+                </p>
+
+              </div>
+
+              <div className="p-6">
+
+                <p className="text-gray-300 mb-6">
+                  {college.overview}
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-5">
+
+                  <div className="bg-slate-800 rounded-xl p-4">
+                    <p className="text-gray-400 text-sm">Fees</p>
+                    <p className="text-cyan-400 font-bold text-xl">
+                      ₹{college.fees.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-800 rounded-xl p-4">
+                    <p className="text-gray-400 text-sm">Rating</p>
+                    <p className="text-yellow-400 font-bold text-xl">
+                      ⭐ {college.rating}
+                    </p>
+                  </div>
+
+                </div>
+
+                <div className="bg-slate-800 rounded-xl p-4 mb-6">
+
+                  <p className="text-gray-400 text-sm">
+                    Placement Package
+                  </p>
+
+                  <p className="text-green-400 font-bold text-2xl">
+                    {college.placements}
+                  </p>
+
+                </div>
+
+                <div className="flex gap-3">
+
+                  <button className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 py-3 rounded-xl font-bold hover:opacity-90">
+                    View Details
+                  </button>
+
+                  <button className="px-5 py-3 bg-slate-800 rounded-xl hover:bg-slate-700">
+                    ❤️
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+
+      </div>
+
+    </main>
   );
 }
